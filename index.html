@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProposalAI — Generate proposals in seconds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07080f;
+  --surface: #0e1020;
+  --surface2: #161828;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e2e8f8;
+  --muted: #5a6285;
+  --accent: #5b8ef8;
+  --accent2: #b48cf8;
+  --green: #3dd68c;
+  --red: #f87171;
+  --warn: #fbbf24;
+  --radius: 12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Epilogue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(91,142,248,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(91,142,248,0.025) 1px,transparent 1px);background-size:56px 56px;pointer-events:none}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;position:relative;z-index:1}
+.screen.active{display:flex}
+
+/* ====== LANDING ====== */
+#landing{flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem}
+.landing-glow{position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(91,142,248,0.14) 0%,transparent 65%),radial-gradient(ellipse 40% 40% at 85% 70%,rgba(180,140,248,0.08) 0%,transparent 50%);pointer-events:none}
+
+.badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(91,142,248,0.1);border:1px solid rgba(91,142,248,0.22);border-radius:100px;padding:0.35rem 1rem;font-size:0.75rem;font-weight:500;color:var(--accent);margin-bottom:2rem;animation:fadeUp .5s ease both}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0}
+
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.6rem,7vw,5.5rem);font-weight:800;line-height:1.04;letter-spacing:-0.03em;max-width:15ch;margin-bottom:1.25rem;animation:fadeUp .5s .08s ease both}
+.grad{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:42ch;line-height:1.75;margin-bottom:2.5rem;animation:fadeUp .5s .16s ease both}
+
+.hero-btns{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;justify-content:center;animation:fadeUp .5s .24s ease both}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:.8rem 1.8rem;border-radius:10px;font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;font-family:'Epilogue',sans-serif;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 28px rgba(91,142,248,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 40px rgba(91,142,248,.5)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);background:var(--surface)}
+.btn-sm{padding:.55rem 1.2rem;font-size:.82rem}
+.btn-green{background:var(--green);color:#07080f;font-weight:600}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(61,214,140,.3)}
+.btn-danger{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:var(--red)}
+.btn-danger:hover{background:rgba(248,113,113,.18)}
+
+/* DEMO PREVIEW */
+.demo-preview{margin-top:4rem;width:100%;max-width:780px;animation:fadeUp .7s .32s ease both}
+.demo-shell{background:var(--surface);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 0 80px rgba(91,142,248,.07),0 40px 80px rgba(0,0,0,.45)}
+.demo-bar{background:var(--surface2);padding:.7rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--border)}
+.d{width:10px;height:10px;border-radius:50%}
+.d1{background:#ff5f57}.d2{background:#ffbd2e}.d3{background:#28c840}
+.demo-bar span{margin-left:.5rem;font-size:.75rem;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600}
+.demo-inner{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.demo-col{padding:1.25rem}
+.demo-col:first-child{border-right:1px solid var(--border)}
+.field-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.35rem}
+.demo-area{background:var(--surface2);border:1px solid rgba(91,142,248,.25);border-radius:8px;padding:.75rem;font-size:.78rem;color:var(--text);line-height:1.6;min-height:80px;font-family:'Epilogue',sans-serif}
+.demo-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.6rem}
+.demo-chip{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.5rem .75rem;font-size:.75rem;color:var(--muted)}
+.gen-btn{width:100%;margin-top:.75rem;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;padding:.7rem;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:.02em;animation:glowpulse 2s ease-in-out infinite}
+@keyframes glowpulse{0%,100%{box-shadow:0 0 14px rgba(91,142,248,.3)}50%{box-shadow:0 0 28px rgba(91,142,248,.6)}}
+.result-box{background:rgba(61,214,140,.04);border:1px solid rgba(61,214,140,.12);border-radius:8px;padding:.85rem;margin-top:0}
+.result-tag{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);display:flex;align-items:center;gap:.3rem;margin-bottom:.6rem}
+.result-tag::before{content:'●';font-size:.45rem}
+.result-text{font-size:.75rem;color:rgba(226,232,248,.75);line-height:1.65}
+.result-text strong{color:var(--accent);font-weight:500}
+.cursor{display:inline-block;width:2px;height:.8em;background:var(--accent);vertical-align:middle;animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ====== AUTH SCREEN ====== */
+#auth{align-items:center;justify-content:center;padding:2rem}
+.auth-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 0 60px rgba(0,0,0,.5)}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.auth-logo .icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.75rem}
+.auth-sub{font-size:.85rem;color:var(--muted);margin-bottom:2rem}
+.auth-tabs{display:flex;background:var(--surface2);border-radius:10px;padding:3px;margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:.6rem;text-align:center;font-size:.85rem;font-weight:500;cursor:pointer;border-radius:8px;transition:all .2s;color:var(--muted)}
+.auth-tab.active{background:var(--accent);color:#fff}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:.4rem;display:block}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.75rem 1rem;font-size:.9rem;color:var(--text);font-family:'Epilogue',sans-serif;transition:border-color .2s;outline:none}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--muted)}
+.auth-btn{width:100%;padding:.85rem;background:var(--accent);border:none;border-radius:10px;color:#fff;font-weight:600;font-size:.95rem;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s;margin-top:.5rem}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(91,142,248,.4)}
+.auth-divider{text-align:center;font-size:.78rem;color:var(--muted);margin:1rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 24px);height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+.demo-login-btn{width:100%;padding:.75rem;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:.875rem;cursor:pointer;font-family:'Epilogue',sans-serif;transition:all .2s}
+.demo-login-btn:hover{background:var(--surface);border-color:var(--accent)}
+.error-msg{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:.6rem .9rem;font-size:.8rem;color:var(--red);margin-bottom:1rem;display:none}
+
+/* ====== APP ====== */
+#app{flex-direction:row}
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem 0;height:100vh;position:sticky;top:0}
+.sidebar-logo{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;padding:0 1.25rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.sidebar-logo .icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.6rem}
+.sidebar-nav{padding:1rem 0;flex:1}
+.nav-section{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.5rem 1.25rem .25rem}
+.nav-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.25rem;font-size:.82rem;cursor:pointer;transition:all .15s;color:var(--muted);border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:rgba(91,142,248,.04)}
+.nav-item.active{color:var(--text);background:rgba(91,142,248,.08);border-left-color:var(--accent)}
+.nav-item .ni{font-size:.95rem;width:1.1rem;text-align:center}
+.sidebar-bottom{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.user-pill{display:flex;align-items:center;gap:.6rem;padding:.5rem;border-radius:8px;cursor:pointer;transition:background .2s}
+.user-pill:hover{background:var(--surface2)}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:.78rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-size:.65rem;color:var(--muted)}
+
+/* MAIN CONTENT */
+.main-content{flex:1;overflow-y:auto;height:100vh}
+.page{display:none;padding:2rem}
+.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+.page-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700}
+.page-sub{font-size:.85rem;color:var(--muted);margin-top:.2rem}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.stat-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:700;line-height:1}
+.stat-change{font-size:.72rem;color:var(--green);margin-top:.35rem}
+.stat-change.down{color:var(--red)}
+
+/* RECENT DOCS TABLE */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:.7rem 1.25rem;border-bottom:1px solid var(--border)}
+td{padding:.85rem 1.25rem;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.035)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(91,142,248,.025)}
+.status-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;border-radius:100px;font-size:.7rem;font-weight:600}
+.status-pill::before{content:'●';font-size:.4rem}
+.s-draft{background:rgba(255,255,255,.06);color:var(--muted)}
+.s-sent{background:rgba(251,191,36,.08);color:var(--warn)}
+.s-signed{background:rgba(61,214,140,.08);color:var(--green)}
+.s-paid{background:rgba(91,142,248,.1);color:var(--accent)}
+.doc-icon{font-size:1rem;margin-right:.4rem}
+.action-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:.3rem .6rem;border-radius:6px;transition:all .2s;font-family:'Epilogue',sans-serif}
+.action-btn:hover{background:var(--surface2);color:var(--text)}
+
+/* GENERATE PAGE */
+.generate-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+.gen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.gen-card h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+.doc-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1.25rem}
+.doc-type-btn{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.75rem .5rem;text-align:center;cursor:pointer;transition:all .2s;font-size:.75rem;font-weight:500}
+.doc-type-btn:hover,.doc-type-btn.selected{border-color:rgba(91,142,248,.4);background:rgba(91,142,248,.08);color:var(--accent)}
+.doc-type-btn .dt-icon{font-size:1.2rem;display:block;margin-bottom:.3rem}
+textarea.form-input{resize:vertical;min-height:110px;line-height:1.6}
+.lang-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.select-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.7rem 1rem;font-size:.875rem;color:var(--text);font-family:'Epilogue',sans-serif;outline:none;cursor:pointer;transition:border-color .2s}
+.select-input:focus{border-color:var(--accent)}
+.gen-main-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;font-family:'Syne',sans-serif;margin-top:1rem;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.gen-main-btn:hover{transform:translateY(-1px);box-shadow:0 6px 30px rgba(91,142,248,.4)}
+.gen-main-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* RESULT */
+.result-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.result-area h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.result-actions{display:flex;gap:.5rem}
+.result-doc{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-size:.82rem;line-height:1.75;min-height:300px;max-height:520px;overflow-y:auto;white-space:pre-wrap;color:rgba(226,232,248,.85);font-family:'Epilogue',sans-serif}
+.result-doc.generating{color:var(--muted);font-style:italic}
+.result-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;color:var(--muted);text-align:center;gap:.75rem}
+.result-empty .big-icon{font-size:3rem;opacity:.3}
+.result-empty p{font-size:.85rem}
+
+/* LOADING SPINNER */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TEMPLATES PAGE */
+.templates-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.template-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s}
+.template-card:hover{border-color:rgba(91,142,248,.3);transform:translateY(-2px)}
+.template-icon{font-size:1.5rem;margin-bottom:.75rem}
+.template-name{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;margin-bottom:.3rem}
+.template-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+.template-tag{display:inline-block;margin-top:.6rem;font-size:.68rem;font-weight:600;padding:.2rem .55rem;border-radius:6px;background:rgba(91,142,248,.1);color:var(--accent)}
+
+/* SETTINGS */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem}
+.settings-section h3{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.035)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:.85rem}
+.settings-label span{display:block;font-size:.75rem;color:var(--muted);margin-top:.1rem}
+.toggle{width:40px;height:22px;background:var(--surface2);border:1px solid var(--border2);border-radius:100px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle.on::after{transform:translateX(18px)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:.85rem 1.25rem;font-size:.85rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 30px rgba(0,0,0,.4);transform:translateY(80px);opacity:0;transition:all .3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(61,214,140,.3)}
+.toast.error{border-color:rgba(248,113,113,.3)}
+
+/* PLAN BANNER */
+.plan-banner{background:linear-gradient(135deg,rgba(91,142,248,.12),rgba(180,140,248,.08));border:1px solid rgba(91,142,248,.2);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.plan-text h4{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+.plan-text p{font-size:.8rem;color:var(--muted)}
+.usage-bar-wrap{width:200px}
+.usage-bar-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:.3rem}
+.usage-bar{height:5px;background:var(--surface2);border-radius:100px;overflow:hidden}
+.usage-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width .5s ease}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .generate-grid{grid-template-columns:1fr}
+  .templates-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING SCREEN -->
+<div id="landing" class="screen active">
+  <div class="landing-glow"></div>
+
+  <div class="badge"><span class="badge-dot"></span>AI-powered · Proposals in 60 seconds</div>
+  <h1>Win more clients.<br><span class="grad">Spend less time.</span></h1>
+  <p class="hero-sub">Describe your project. ProposalAI writes a professional proposal, contract and invoice — tailored to your industry, ready to send.</p>
+  <div class="hero-btns">
+    <button class="btn btn-primary" onclick="showAuth('signup')">Start for free →</button>
+    <button class="btn btn-ghost" onclick="showAuth('demo')">Try the demo</button>
+  </div>
+
+  <!-- Mini demo preview -->
+  <div class="demo-preview">
+    <div class="demo-shell">
+      <div class="demo-bar">
+        <div class="d d1"></div><div class="d d2"></div><div class="d d3"></div>
+        <span>ProposalAI · Generate</span>
+      </div>
+      <div class="demo-inner">
+        <div class="demo-col">
+          <div class="field-label">Describe the project</div>
+          <div class="demo-area">Redesign Shopify store for a fashion brand — new homepage, product pages, mobile-first. About 3 weeks work.</div>
+          <div class="demo-row">
+            <div class="demo-chip">💰 $4,500</div>
+            <div class="demo-chip">📅 3 weeks</div>
+          </div>
+          <button class="gen-btn">✦ Generate proposal</button>
+        </div>
+        <div class="demo-col">
+          <div class="result-box">
+            <div class="result-tag">Generated in 0.9s</div>
+            <div class="result-text">
+              <strong>Proposal — Shopify Redesign</strong><br><br>
+              Dear Sarah, I'm excited to present this proposal for your store redesign...<br><br>
+              <strong>Project value:</strong> $4,500 USD<br>
+              <strong>Timeline:</strong> 3 weeks from deposit<span class="cursor"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth" class="screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="icon">✦</div>
+      ProposalAI
+    </div>
+    <div class="auth-sub" id="auth-sub">Create your free account</div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="setAuthTab('signup')" id="tab-signup">Sign up</div>
+      <div class="auth-tab" onclick="setAuthTab('login')" id="tab-login">Log in</div>
+    </div>
+
+    <div class="error-msg" id="auth-error">Invalid credentials. Please try again.</div>
+
+    <div id="signup-fields">
+      <div class="form-group">
+        <label class="form-label">Your name</label>
+        <input class="form-input" id="signup-name" type="text" placeholder="Alex Johnson">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="auth-email" type="email" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="auth-password" type="password" placeholder="••••••••">
+    </div>
+
+    <button class="auth-btn" id="auth-submit" onclick="handleAuth()">Create free account →</button>
+
+    <div class="auth-divider">or</div>
+    <button class="demo-login-btn" onclick="demoLogin()">✦ Continue with demo account</button>
+
+    <p style="font-size:.75rem;color:var(--muted);text-align:center;margin-top:1.25rem">
+      By continuing you agree to our <a href="#" style="color:var(--accent)">Terms</a> and <a href="#" style="color:var(--accent)">Privacy Policy</a>.
+    </p>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app" class="screen">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">✦</div>
+      ProposalAI
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <span class="ni">◉</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('generate')" id="nav-generate">
+        <span class="ni">✦</span> Generate
+      </div>
+      <div class="nav-item" onclick="showPage('documents')" id="nav-documents">
+        <span class="ni">◈</span> Documents
+      </div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item" onclick="showPage('templates')" id="nav-templates">
+        <span class="ni">◎</span> Templates
+      </div>
+      <div class="nav-item" onclick="showPage('settings')" id="nav-settings">
+        <span class="ni">⊙</span> Settings
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-pill" onclick="logout()">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Alex Johnson</div>
+          <div class="user-plan">Free plan · 5 left</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div style="padding:2rem">
+        <div class="page-header">
+          <div>
+            <div class="page-title" id="dash-greeting">Good morning 👋</div>
+            <div class="page-sub">Here's what's happening with your proposals.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showPage('generate')">✦ New document</button>
+        </div>
+
+        <div class="plan-banner">
+          <div class="plan-text">
+            <h4>Free plan — 5 proposals/month</h4>
+            <p>Upgrade to Pro for unlimited proposals, e-signatures, and Stripe payments.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.75rem">
+            <div class="usage-bar-wrap">
+              <div class="usage-bar-label"><span>Monthly usage</span><span id="usage-text">2 / 5</span></div>
+              <div class="usage-bar"><div class="usage-fill" id="usage-fill" style="width:40%"></div></div>
+            </div>
+            <button class="btn btn-primary btn-sm">Upgrade to Pro — $19/mo</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-label">Total proposals</div>
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-change">All time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Pending signature</div>
+            <div class="stat-val" id="stat-pending">0</div>
+            <div class="stat-change">Awaiting client</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Signed & accepted</div>
+            <div class="stat-val" id="stat-signed">0</div>
+            <div class="stat-change" style="color:var(--green)">↑ Win rate</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Total value</div>
+            <div class="stat-val" id="stat-value">$0</div>
+            <div class="stat-change">Across all docs</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent documents</div>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('documents')">View all →</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="recent-docs">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No documents yet — <span style="color:var(--accent);cursor:pointer" onclick="showPage('generate')">generate your first proposal →</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERATE -->
+    <div class="page" id="page-generate">
+      <div style="padding:2rem">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Generate document</div>
+            <div class="page-sub">Describe your project in plain language — AI does the rest.</div>
+          </div>
+        </div>
+
+        <div class="generate-grid">
+          <div>
+            <div class="gen-card">
+              <h3>📋 Document type</h3>
+              <div class="doc-type-grid" id="doc-types">
+                <div class="doc-type-btn selected" data-type="Proposal" onclick="selectDocType(this)"><span class="dt-icon">📄</span>Proposal</div>
+                <div class="doc-type-btn" data-type="Contract" onclick="selectDocType(this)"><span class="dt-icon">✍️</span>Contract</div>
+                <div class="doc-type-btn" data-type="Invoice" onclick="selectDocType(this)"><span class="dt-icon">🧾</span>Invoice</div>
+                <div class="doc-type-btn" data-type="Quote" onclick="selectDocType(this)"><span class="dt-icon">💬</span>Quote</div>
+                <div class="doc-type-btn" data-type="Scope of Work" onclick="selectDocType(this)"><span class="dt-icon">📊</span>Scope</div>
+                <div class="doc-type-btn" data-type="Follow-up Email" onclick="selectDocType(this)"><span class="dt-icon">📧</span>Email</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Describe the project</label>
+                <textarea class="form-input" id="project-desc" rows="5" placeholder="e.g. Redesign the website for a dental clinic. New homepage, about page, contact form and booking system. Mobile-friendly. About 3 weeks of work."></textarea>
+              </div>
+
+              <div class="lang-row">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Project value</label>
+                  <input class="form-input" id="project-value" type="text" placeholder="e.g. $4,500 or $1,200/month">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Client name</label>
+                  <input class="form-input" id="client-name" type="text" placeholder="e.g. Sarah Miller">
+                </div>
+              </div>
+
+              <div class="lang-row" style="margin-top:.75rem">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Timeline</label>
+                  <input class="form-input" id="project-timeline" type="text" placeholder="e.g. 3 weeks">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Language</label>
+                  <select class="select-input" id="doc-language">
+                    <option value="English">🇬🇧 English</option>
+                    <option value="Danish">🇩🇰 Danish</option>
+                    <option value="German">🇩🇪 German</option>
+                    <option value="French">🇫🇷 French</option>
+                    <option value="Spanish">🇪🇸 Spanish</option>
+                    <option value="Dutch">🇳🇱 Dutch</option>
+                    <option value="Swedish">🇸🇪 Swedish</option>
+                    <option value="Norwegian">🇳🇴 Norwegian</option>
+                    <option value="Italian">🇮🇹 Italian</option>
+                    <option value="Portuguese">🇵🇹 Portuguese</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="gen-main-btn" id="gen-btn" onclick="generateDocument()">
+                <span id="gen-btn-text">✦ Generate document</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="result-area">
+              <h3>
+                <span id="result-title">Result</span>
+                <div class="result-actions" id="result-actions" style="display:none">
+                  <button class="btn btn-ghost btn-sm" onclick="copyResult()">📋 Copy</button>
+                  <button class="btn btn-ghost btn-sm" onclick="downloadResult()">⬇ Download</button>
+                  <button class="btn btn-green btn-sm" onclick="saveDocument()">💾 Save</button>
+                </div>
+              </h3>
+              <div id="result-output">
+                <div class="result-empty">
+                  <div class="big-icon">✦</div>
+                  <p>Your generated document will appear here</p>
+                  <p style="font-size:.75rem;color:var(--muted)">Fill in the form and click Generate</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="page" id="page-documents">
+      <div style="padding:2rem">
+        <div class="page-header">
+          <div>
+            <div class="page-title">All documents</div>
+            <div class="page-sub" id="doc-count-label">0 documents</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showPage('generate')">✦ New document</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-docs">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2.5rem">
+                No documents yet — <span style="color:var(--accent);cursor:pointer" onclick="showPage('generate')">generate your first →</span>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div class="page" id="page-templates">
+      <div style="padding:2rem">
+        <div class="page-header">
+          <div class="page-title">Templates</div>
+        </div>
+        <div class="templates-grid">
+          <div class="template-card" onclick="useTemplate('Web design project proposal — 4-week timeline, responsive site, 2 revision rounds')">
+            <div class="template-icon">🎨</div>
+            <div class="template-name">Web Design Proposal</div>
+            <div class="template-desc">Complete proposal for website design projects with revision policy and payment terms.</div>
+            <div class="template-tag">Proposal</div>
+          </div>
+          <div class="template-card" onclick="useTemplate('Software development contract — milestone-based payment, IP ownership, NDA clause')">
+            <div class="template-icon">💻</div>
+            <div class="template-name">Dev Contract</div>
+            <div class="template-desc">Professional software development contract with IP transfer and confidentiality clause.</div>
+            <div class="template-tag">Contract</div>
+          </div>
+          <div class="template-card" onclick="useTemplate('Monthly retainer invoice for ongoing marketing services including SEO, content and social media')">
+            <div class="template-icon">📊</div>
+            <div class="template-name">Marketing Retainer</div>
+            <div class="template-desc">Monthly retainer invoice for ongoing marketing or consulting engagements.</div>
+            <div class="template-tag">Invoice</div>
+          </div>
+          <div class="template-card" onclick="useTemplate('Photography package quote — wedding day coverage, 8 hours, edited gallery delivery in 4 weeks')">
+            <div class="template-icon">📸</div>
+            <div class="template-name">Photography Quote</div>
+            <div class="template-desc">Event or wedding photography quote with usage rights and delivery timeline.</div>
+            <div class="template-tag">Quote</div>
+          </div>
+          <div class="template-card" onclick="useTemplate('Construction renovation scope of work — kitchen remodel, materials list, phased timeline')">
+            <div class="template-icon">🏗️</div>
+            <div class="template-name">Construction Scope</div>
+            <div class="template-desc">Detailed scope of work for renovation or construction projects with material breakdown.</div>
+            <div class="template-tag">Scope of Work</div>
+          </div>
+          <div class="template-card" onclick="useTemplate('Professional consulting services agreement — strategy advisory, monthly retainer, confidentiality')">
+            <div class="template-icon">⚖️</div>
+            <div class="template-name">Consulting Agreement</div>
+            <div class="template-desc">Consulting services agreement with scope, payment terms and confidentiality clause.</div>
+            <div class="template-tag">Contract</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div style="padding:2rem">
+        <div class="page-header">
+          <div class="page-title">Settings</div>
+        </div>
+        <div class="settings-section">
+          <h3>Your profile</h3>
+          <div class="form-group"><label class="form-label">Your name</label><input class="form-input" id="settings-name" placeholder="Alex Johnson"></div>
+          <div class="form-group"><label class="form-label">Company</label><input class="form-input" id="settings-company" placeholder="My Agency"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="settings-email" placeholder="you@example.com"></div>
+          <div class="form-group"><label class="form-label">Default currency</label>
+            <select class="select-input" id="settings-currency">
+              <option>USD $</option><option>EUR €</option><option>GBP £</option><option>DKK kr.</option><option>SEK kr</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save profile</button>
+        </div>
+        <div class="settings-section">
+          <h3>Notifications</h3>
+          <div class="settings-row">
+            <div class="settings-label">Email when client views document<span>Get notified when a client opens your proposal</span></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-label">Email when client signs<span>Instant notification on signature</span></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-label">Weekly summary<span>Your proposal stats every Monday</span></div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Plan & billing</h3>
+          <div class="settings-row">
+            <div class="settings-label">Current plan<span>Free — 5 proposals/month</span></div>
+            <button class="btn btn-primary btn-sm">Upgrade to Pro</button>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="logout()">Log out</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">✓</span>
+  <span id="toast-msg">Saved!</span>
+</div>
+
+<script>
+// ============ STATE ============
+let currentUser = null;
+let documents = [];
+let selectedDocType = 'Proposal';
+let currentResult = '';
+
+const STORAGE_KEY = 'proposalai_data';
+
+function loadData() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) {
+      const parsed = JSON.parse(d);
+      documents = parsed.documents || [];
+      currentUser = parsed.user || null;
+    }
+  } catch(e) {}
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: currentUser, documents }));
+}
+
+// ============ NAVIGATION ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  if (name === 'dashboard') refreshDashboard();
+  if (name === 'documents') refreshDocTable();
+}
+
+// ============ AUTH ============
+function showAuth(mode) {
+  showScreen('auth');
+  setAuthTab(mode === 'demo' ? 'login' : 'signup');
+  if (mode === 'demo') {
+    document.getElementById('auth-email').value = 'demo@proposalai.io';
+    document.getElementById('auth-password').value = 'demo123';
+  }
+}
+
+function setAuthTab(tab) {
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('signup-fields').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = tab === 'signup' ? 'Create free account →' : 'Log in →';
+  document.getElementById('auth-sub').textContent = tab === 'signup' ? 'Create your free account' : 'Welcome back';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function handleAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const isSignup = document.getElementById('tab-signup').classList.contains('active');
+  const name = isSignup ? (document.getElementById('signup-name').value.trim() || 'User') : 'User';
+
+  if (!email || !password) {
+    document.getElementById('auth-error').textContent = 'Please fill in all fields.';
+    document.getElementById('auth-error').style.display = 'block';
+    return;
+  }
+
+  currentUser = { name: name || email.split('@')[0], email, plan: 'free', usage: 0 };
+  saveData();
+  enterApp();
+}
+
+function demoLogin() {
+  currentUser = { name: 'Demo User', email: 'demo@proposalai.io', plan: 'free', usage: 2 };
+  documents = [
+    { id: 1, title: 'Website Redesign Proposal', client: 'Studio M', type: 'Proposal', value: '$3,200', status: 'sent', date: '2026-05-01', content: 'Sample proposal content...' },
+    { id: 2, title: 'E-commerce Development', client: 'TechVert', type: 'Contract', value: '$6,500', status: 'signed', date: '2026-04-28', content: 'Sample contract content...' },
+  ];
+  saveData();
+  enterApp();
+}
+
+function enterApp() {
+  const name = currentUser.name;
+  document.getElementById('sidebar-name').textContent = name;
+  document.getElementById('sidebar-avatar').textContent = name[0].toUpperCase();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dash-greeting').textContent = `${greeting}, ${name.split(' ')[0]} 👋`;
+  document.getElementById('settings-name').value = name;
+  document.getElementById('settings-email').value = currentUser.email;
+  showScreen('app');
+  refreshDashboard();
+}
+
+function logout() {
+  currentUser = null;
+  saveData();
+  showScreen('landing');
+}
+
+// ============ DASHBOARD ============
+function refreshDashboard() {
+  const total = documents.length;
+  const pending = documents.filter(d => d.status === 'sent').length;
+  const signed = documents.filter(d => d.status === 'signed' || d.status === 'paid').length;
+  const value = documents.reduce((s, d) => {
+    const n = parseFloat((d.value || '').replace(/[^0-9.]/g, '')) || 0;
+    return s + n;
+  }, 0);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-signed').textContent = signed;
+  document.getElementById('stat-value').textContent = '$' + value.toLocaleString();
+
+  const usage = currentUser?.usage || 0;
+  document.getElementById('usage-text').textContent = `${usage} / 5`;
+  document.getElementById('usage-fill').style.width = `${Math.min(100, (usage / 5) * 100)}%`;
+
+  const tbody = document.getElementById('recent-docs');
+  const recent = [...documents].sort((a,b) => b.id - a.id).slice(0, 5);
+  if (!recent.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No documents yet — <span style="color:var(--accent);cursor:pointer" onclick="showPage(\'generate\')">generate your first proposal →</span></td></tr>';
+  } else {
+    tbody.innerHTML = recent.map(d => docRow(d)).join('');
+  }
+}
+
+function statusPill(s) {
+  const map = { draft:'s-draft', sent:'s-sent', signed:'s-signed', paid:'s-paid' };
+  return `<span class="status-pill ${map[s]||'s-draft'}">${s}</span>`;
+}
+
+function docRow(d) {
+  return `<tr>
+    <td><span class="doc-icon">📄</span>${d.title}</td>
+    <td>${d.client || '—'}</td>
+    <td>${d.type}</td>
+    <td>${d.value || '—'}</td>
+    <td>${statusPill(d.status)}</td>
+    <td>${d.date}</td>
+    <td>
+      <button class="action-btn" onclick="viewDoc(${d.id})">View</button>
+      <button class="action-btn" onclick="deleteDoc(${d.id})">Delete</button>
+    </td>
+  </tr>`;
+}
+
+function refreshDocTable() {
+  const all = [...documents].sort((a,b) => b.id - a.id);
+  const label = document.getElementById('doc-count-label');
+  label.textContent = `${all.length} document${all.length !== 1 ? 's' : ''}`;
+  const tbody = document.getElementById('all-docs');
+  if (!all.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2.5rem">No documents yet — <span style="color:var(--accent);cursor:pointer" onclick="showPage(\'generate\')">generate your first →</span></td></tr>';
+  } else {
+    tbody.innerHTML = all.map(d => docRow(d)).join('');
+  }
+}
+
+function viewDoc(id) {
+  const doc = documents.find(d => d.id === id);
+  if (!doc) return;
+  currentResult = doc.content;
+  showPage('generate');
+  document.getElementById('result-output').innerHTML = `<div class="result-doc">${doc.content}</div>`;
+  document.getElementById('result-title').textContent = doc.title;
+  document.getElementById('result-actions').style.display = 'flex';
+}
+
+function deleteDoc(id) {
+  documents = documents.filter(d => d.id !== id);
+  saveData();
+  refreshDashboard();
+  refreshDocTable();
+  showToast('Document deleted', 'success');
+}
+
+// ============ GENERATE ============
+function selectDocType(el) {
+  document.querySelectorAll('.doc-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDocType = el.dataset.type;
+}
+
+async function generateDocument() {
+  const desc = document.getElementById('project-desc').value.trim();
+  if (!desc) { showToast('Please describe your project first', 'error'); return; }
+
+  const value = document.getElementById('project-value').value.trim();
+  const client = document.getElementById('client-name').value.trim();
+  const timeline = document.getElementById('project-timeline').value.trim();
+  const language = document.getElementById('doc-language').value;
+  const userName = currentUser?.name || 'Freelancer';
+  const company = document.getElementById('settings-company')?.value || '';
+
+  const btn = document.getElementById('gen-btn');
+  const btnText = document.getElementById('gen-btn-text');
+  btn.disabled = true;
+  btnText.innerHTML = '<div class="spinner"></div> Generating...';
+
+  document.getElementById('result-output').innerHTML = '<div class="result-doc generating">✦ Writing your document...</div>';
+  document.getElementById('result-actions').style.display = 'none';
+
+  const prompt = `Write a professional ${selectedDocType} in ${language}.
+
+Freelancer/Service Provider: ${userName}${company ? ' at ' + company : ''}
+Project description: ${desc}
+${value ? 'Project value: ' + value : ''}
+${client ? 'Client name: ' + client : ''}
+${timeline ? 'Timeline: ' + timeline : ''}
+
+Requirements:
+- Write the complete, ready-to-send document in ${language}
+- Professional tone appropriate for ${selectedDocType}
+- Include all standard sections (introduction, scope, terms, payment, signatures if relevant)
+- Make it specific to the described project — not generic
+- If it's a contract or proposal, include a signature section at the end
+- Format clearly with headers and sections
+- Do NOT add notes or explanations — only the document itself`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(c => c.text || '').join('') || 'Generation failed. Please try again.';
+    currentResult = text;
+
+    document.getElementById('result-output').innerHTML = `<div class="result-doc">${text.replace(/\n/g,'<br>')}</div>`;
+    document.getElementById('result-title').textContent = `${selectedDocType} — ${client || 'New Document'}`;
+    document.getElementById('result-actions').style.display = 'flex';
+
+    if (currentUser) currentUser.usage = (currentUser.usage || 0) + 1;
+    saveData();
+
+  } catch(e) {
+    document.getElementById('result-output').innerHTML = `<div class="result-doc generating">⚠ Generation failed. Check your connection and try again.\n\nError: ${e.message}</div>`;
+  }
+
+  btn.disabled = false;
+  btnText.innerHTML = '✦ Generate document';
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(currentResult).then(() => showToast('Copied to clipboard!', 'success'));
+}
+
+function downloadResult() {
+  const blob = new Blob([currentResult], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `proposalai-${selectedDocType.toLowerCase()}-${Date.now()}.txt`;
+  a.click();
+  showToast('Downloaded!', 'success');
+}
+
+function saveDocument() {
+  if (!currentResult) return;
+  const client = document.getElementById('client-name').value.trim() || 'Unknown Client';
+  const value = document.getElementById('project-value').value.trim() || '—';
+  const doc = {
+    id: Date.now(),
+    title: `${selectedDocType} — ${client}`,
+    client,
+    type: selectedDocType,
+    value,
+    status: 'draft',
+    date: new Date().toISOString().split('T')[0],
+    content: currentResult
+  };
+  documents.unshift(doc);
+  saveData();
+  refreshDashboard();
+  showToast('Document saved!', 'success');
+}
+
+// ============ TEMPLATES ============
+function useTemplate(desc) {
+  showPage('generate');
+  document.getElementById('project-desc').value = desc;
+  showToast('Template loaded — fill in the details and generate!', 'success');
+}
+
+// ============ SETTINGS ============
+function saveSettings() {
+  if (currentUser) {
+    currentUser.name = document.getElementById('settings-name').value || currentUser.name;
+    document.getElementById('sidebar-name').textContent = currentUser.name;
+    document.getElementById('sidebar-avatar').textContent = currentUser.name[0].toUpperCase();
+    saveData();
+    showToast('Settings saved!', 'success');
+  }
+}
+
+// ============ TOAST ============
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✓' : '⚠';
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============ INIT ============
+loadData();
+if (currentUser) enterApp();
+
+// Scroll reveal on landing
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 60); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+reveals.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
