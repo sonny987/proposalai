@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helgason.io — Tools that pay for themselves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0a0a;
+  --page:#fafaf8;
+  --warm:#f2f0ea;
+  --border:#e4e0d8;
+  --muted:#8a8680;
+  --a1:#1a1a2e; /* ClientFlow — deep navy */
+  --a1l:#e8eaf6;
+  --a2:#1a2e1a; /* ProposalAI — deep forest */
+  --a2l:#e8f5e9;
+  --accent:#c0392b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Figtree',sans-serif;background:var(--page);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 4rem;background:rgba(250,250,248,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:.4rem}
+.nav-logo span{color:var(--accent)}
+nav ul{list-style:none;display:flex;gap:2.5rem}
+nav ul a{text-decoration:none;color:var(--muted);font-size:.875rem;font-weight:500;transition:color .2s}
+nav ul a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--page);padding:.5rem 1.4rem;border-radius:100px;text-decoration:none;font-size:.875rem;font-weight:600;transition:all .2s}
+.nav-cta:hover{background:var(--accent);transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 60% at 50% 0%,rgba(192,57,43,0.06) 0%,transparent 60%);pointer-events:none}
+
+.hero-eyebrow{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin-bottom:1.5rem;animation:fadeUp .5s ease both}
+
+h1{font-family:'Fraunces',serif;font-size:clamp(3rem,8vw,7rem);font-weight:900;line-height:1;letter-spacing:-.02em;max-width:14ch;margin-bottom:1.5rem;animation:fadeUp .5s .1s ease both}
+h1 em{font-style:italic;font-weight:300;color:var(--accent)}
+
+.hero-lead{font-size:1.15rem;color:var(--muted);max-width:44ch;line-height:1.75;margin-bottom:3rem;animation:fadeUp .5s .2s ease both}
+
+.hero-products{display:flex;gap:1rem;animation:fadeUp .5s .3s ease both;flex-wrap:wrap;justify-content:center}
+.product-pill{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.2rem;border-radius:100px;text-decoration:none;font-weight:600;font-size:.875rem;transition:all .2s}
+.pill-cf{background:var(--a1);color:#c8cfe8}
+.pill-cf:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,26,46,.3)}
+.pill-pa{background:var(--a2);color:#c8e8c8}
+.pill-pa:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,46,26,.3)}
+
+.hero-scroll{margin-top:4rem;font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:.5rem;animation:fadeUp .5s .4s ease both}
+.scroll-arrow{animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* INTRO ROW */
+.intro-section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.intro-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.75rem}
+.intro-title{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.intro-body{font-size:1rem;color:var(--muted);line-height:1.8}
+.intro-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
+.intro-stat{}
+.intro-stat-val{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;line-height:1}
+.intro-stat-label{font-size:.78rem;color:var(--muted);margin-top:.3rem}
+.intro-visual{background:var(--warm);border:1px solid var(--border);border-radius:20px;padding:2rem;display:flex;flex-direction:column;gap:1rem}
+.mini-card{background:white;border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;align-items:center;gap:.75rem}
+.mini-icon{font-size:1.3rem;flex-shrink:0}
+.mini-text{}
+.mini-title{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
+.mini-sub{font-size:.72rem;color:var(--muted)}
+.mini-val{margin-left:auto;font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;white-space:nowrap}
+.mini-val.green{color:#2e7d32}
+.mini-val.blue{color:#1565c0}
+
+/* PRODUCTS */
+#products{padding:5rem 2rem;background:var(--ink)}
+.products-header{max-width:1100px;margin:0 auto 4rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:2rem}
+.products-header h2{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--page);line-height:1.15}
+.products-header p{font-size:.95rem;color:rgba(250,250,248,.5);max-width:36ch;line-height:1.7}
+
+.products-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+
+.product-card{border-radius:20px;overflow:hidden;position:relative}
+.product-card-inner{padding:2.5rem;height:100%;display:flex;flex-direction:column}
+.pc-cf{background:var(--a1);border:1px solid rgba(200,207,232,.1)}
+.pc-pa{background:var(--a2);border:1px solid rgba(200,232,200,.1)}
+
+.pc-badge{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .75rem;border-radius:100px;margin-bottom:1.5rem}
+.pc-cf .pc-badge{background:rgba(200,207,232,.1);color:#c8cfe8}
+.pc-pa .pc-badge{background:rgba(200,232,200,.1);color:#c8e8c8}
+
+.pc-name{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:white;margin-bottom:.5rem;line-height:1.1}
+.pc-tagline{font-size:.9rem;color:rgba(255,255,255,.55);margin-bottom:2rem;line-height:1.6}
+
+.pc-features{list-style:none;display:flex;flex-direction:column;gap:.6rem;margin-bottom:2rem;flex:1}
+.pc-features li{display:flex;align-items:center;gap:.6rem;font-size:.85rem;color:rgba(255,255,255,.7)}
+.pc-features li::before{content:'→';font-size:.7rem;opacity:.5;flex-shrink:0}
+
+.pc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07)}
+.pc-price{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:white}
+.pc-price span{font-size:.85rem;font-weight:400;color:rgba(255,255,255,.4);font-family:'Figtree',sans-serif}
+
+.pc-btn{padding:.65rem 1.4rem;border-radius:100px;font-weight:600;font-size:.875rem;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem}
+.pc-cf .pc-btn{background:rgba(200,207,232,.12);color:#c8cfe8;border:1px solid rgba(200,207,232,.2)}
+.pc-cf .pc-btn:hover{background:rgba(200,207,232,.22)}
+.pc-pa .pc-btn{background:rgba(200,232,200,.12);color:#c8e8c8;border:1px solid rgba(200,232,200,.2)}
+.pc-pa .pc-btn:hover{background:rgba(200,232,200,.22)}
+
+/* BUNDLE */
+.bundle-section{max-width:1100px;margin:0 auto;padding:0 2rem 5rem}
+.bundle-card{background:var(--accent);border-radius:20px;padding:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem;position:relative;overflow:hidden}
+.bundle-card::before{content:'';position:absolute;top:-40%;right:-10%;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none}
+.bundle-text h3{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:white;margin-bottom:.5rem;line-height:1.15}
+.bundle-text p{font-size:.95rem;color:rgba(255,255,255,.7);max-width:40ch;line-height:1.7}
+.bundle-pricing{text-align:right}
+.bundle-was{font-size:.85rem;color:rgba(255,255,255,.5);text-decoration:line-through}
+.bundle-price{font-family:'Fraunces',serif;font-size:3rem;font-weight:700;color:white;line-height:1}
+.bundle-period{font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.bundle-btn{display:block;background:white;color:var(--accent);padding:.85rem 2rem;border-radius:100px;text-align:center;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .2s;white-space:nowrap}
+.bundle-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+
+/* HOW IT WORKS */
+.how-section{padding:6rem 2rem;background:var(--warm)}
+.how-inner{max-width:1100px;margin:0 auto}
+.section-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.75rem}
+.section-title{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.section-sub{font-size:1rem;color:var(--muted);max-width:44ch;line-height:1.75}
+
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:4rem}
+.step{position:relative}
+.step-num{font-family:'Fraunces',serif;font-size:3.5rem;font-weight:900;color:var(--border);line-height:1;margin-bottom:.75rem}
+.step h3{font-size:1rem;font-weight:600;margin-bottom:.4rem}
+.step p{font-size:.85rem;color:var(--muted);line-height:1.6}
+.step-connector{position:absolute;top:1.5rem;right:-1rem;font-size:1.2rem;color:var(--border)}
+
+/* GTM - GO TO MARKET */
+.gtm-section{padding:6rem 2rem;max-width:1100px;margin:0 auto}
+.gtm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.gtm-card{background:var(--warm);border:1px solid var(--border);border-radius:16px;padding:1.75rem}
+.gtm-icon{font-size:1.75rem;margin-bottom:1rem}
+.gtm-card h3{font-size:1rem;font-weight:600;margin-bottom:.5rem}
+.gtm-card p{font-size:.85rem;color:var(--muted);line-height:1.65}
+.gtm-tag{display:inline-block;font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;margin-top:.75rem;background:var(--a1l);color:var(--a1)}
+
+/* TIMELINE */
+.timeline-section{background:var(--ink);padding:6rem 2rem}
+.timeline-inner{max-width:800px;margin:0 auto}
+.timeline-header{text-align:center;margin-bottom:4rem}
+.timeline-header h2{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--page);margin-bottom:.75rem}
+.timeline-header p{font-size:.95rem;color:rgba(250,250,248,.5)}
+
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:grid;grid-template-columns:120px 1fr;gap:2rem;padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.06);align-items:start}
+.tl-item:last-child{border-bottom:none}
+.tl-time{font-size:.78rem;font-weight:600;color:rgba(250,250,248,.35);padding-top:.2rem}
+.tl-time strong{display:block;font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--page);margin-bottom:.15rem}
+.tl-content h4{font-size:.95rem;font-weight:600;color:var(--page);margin-bottom:.3rem}
+.tl-content p{font-size:.82rem;color:rgba(250,250,248,.5);line-height:1.6}
+.tl-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.tl-tag{font-size:.68rem;font-weight:600;padding:.2rem .6rem;border-radius:100px;background:rgba(255,255,255,.06);color:rgba(250,250,248,.5)}
+.tl-tag.active{background:rgba(192,57,43,.15);color:rgba(192,57,43,.9)}
+
+/* CTA */
+.final-cta{padding:8rem 2rem;text-align:center;background:var(--page)}
+.final-cta h2{font-family:'Fraunces',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:900;line-height:1.05;max-width:14ch;margin:0 auto 1.5rem;letter-spacing:-.02em}
+.final-cta h2 em{font-style:italic;font-weight:300;color:var(--accent)}
+.final-cta p{font-size:1.05rem;color:var(--muted);max-width:40ch;margin:0 auto 3rem;line-height:1.75}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-dark{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--page);padding:.9rem 2rem;border-radius:100px;text-decoration:none;font-weight:600;font-size:.95rem;transition:all .2s}
+.btn-dark:hover{background:var(--accent);transform:translateY(-2px)}
+.btn-light{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--muted);border:1px solid var(--border);padding:.9rem 2rem;border-radius:100px;text-decoration:none;font-weight:500;font-size:.95rem;transition:all .2s}
+.btn-light:hover{background:var(--warm);color:var(--ink)}
+
+/* FOOTER */
+footer{background:var(--ink);padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:2rem}
+.footer-logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--page)}
+.footer-logo span{color:var(--accent)}
+footer ul{list-style:none;display:flex;gap:2rem}
+footer ul a{text-decoration:none;color:rgba(250,250,248,.4);font-size:.82rem;transition:color .2s}
+footer ul a:hover{color:var(--page)}
+.footer-copy{font-size:.78rem;color:rgba(250,250,248,.25)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  nav ul{display:none}
+  .intro-grid,.products-grid{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:repeat(2,1fr)}
+  .gtm-grid{grid-template-columns:1fr}
+  .bundle-card{flex-direction:column}
+  .bundle-pricing{text-align:left}
+  footer{flex-direction:column;text-align:center}
+  footer ul{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://buy.stripe.com/4gMfZj0IRfs923z7oCgjC02" class="nav-logo">helgason<span>.io</span></a>
+  <ul>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#launch">Launch plan</a></li>
+  </ul>
+  <a href="#products" class="nav-cta">See all products →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Independent software · Built for real work</div>
+  <h1>Tools that <em>pay</em><br>for themselves.</h1>
+  <p class="hero-lead">Two focused SaaS products built for freelancers and service businesses worldwide. Simple. Powerful. Priced fairly.</p>
+  <div class="hero-products">
+    <a href="https://buy.stripe.com/fZu3cxcrz4Nv8rX10egjC01" class="product-pill pill-cf">◉ ClientFlow — Client portals</a>
+    <a href="https://buy.stripe.com/6oUcN78bj6VDfUp10egjC00" class="product-pill pill-pa">✦ ProposalAI — AI proposals</a>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll to explore</span>
+    <div class="scroll-arrow">↓</div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="intro-section">
+  <div class="intro-grid">
+    <div class="reveal">
+      <div class="intro-label">Our mission</div>
+      <h2 class="intro-title">Small software.<br>Big results.</h2>
+      <p class="intro-body">We build focused tools that solve one problem really well — and charge a fair price for it. No bloat, no enterprise pricing, no venture capital pressure. Just software that works.</p>
+      <div class="intro-stats">
+        <div class="intro-stat">
+          <div class="intro-stat-val">2</div>
+          <div class="intro-stat-label">Products live</div>
+        </div>
+        <div class="intro-stat">
+          <div class="intro-stat-val">$48/mo</div>
+          <div class="intro-stat-label">Bundle price</div>
+        </div>
+        <div class="intro-stat">
+          <div class="intro-stat-val">∞</div>
+          <div class="intro-stat-label">Time saved</div>
+        </div>
+      </div>
+    </div>
+    <div class="intro-visual reveal">
+      <div class="mini-card">
+        <div class="mini-icon">◉</div>
+        <div class="mini-text">
+          <div class="mini-title">ClientFlow</div>
+          <div class="mini-sub">Client portal · Files · Invoicing</div>
+        </div>
+        <div class="mini-val blue">$29/mo</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon">✦</div>
+        <div class="mini-text">
+          <div class="mini-title">ProposalAI</div>
+          <div class="mini-sub">AI proposals · Contracts · E-sign</div>
+        </div>
+        <div class="mini-val green">$19/mo</div>
+      </div>
+      <div class="mini-card" style="background:linear-gradient(135deg,#ffeaea,#ffe8e8);border-color:#f5c6c6">
+        <div class="mini-icon">🎁</div>
+        <div class="mini-text">
+          <div class="mini-title">Bundle — both products</div>
+          <div class="mini-sub">Save 33% · Full freelance stack</div>
+        </div>
+        <div class="mini-val" style="color:var(--accent)">$32/mo</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted);text-align:center;padding:.25rem 0">14-day free trial on all plans · No credit card needed</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="products-header reveal">
+    <h2>Two products.<br>One freelance stack.</h2>
+    <p>Everything a solo professional needs to look professional, get work approved, and get paid faster.</p>
+  </div>
+  <div class="products-grid">
+
+    <div class="product-card pc-cf reveal">
+      <div class="product-card-inner">
+        <div class="pc-badge">Client management</div>
+        <div class="pc-name">ClientFlow</div>
+        <p class="pc-tagline">One link. Every project. Give clients a branded portal to view progress, approve work, download files and pay invoices.</p>
+        <ul class="pc-features">
+          <li>Branded client portal — your logo, your colors</li>
+          <li>Secure file sharing up to 50GB</li>
+          <li>One-click approvals with instant notifications</li>
+          <li>Integrated invoicing + Stripe payments</li>
+          <li>Threaded client messaging</li>
+          <li>Project milestone timelines</li>
+          <li>E-signatures on all documents</li>
+        </ul>
+        <div class="pc-footer">
+          <div class="pc-price">$29<span>/month</span></div>
+          <a href="https://buy.stripe.com/fZu3cxcrz4Nv8rX10egjC01" class="pc-btn">Start free trial →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card pc-pa reveal">
+      <div class="product-card-inner">
+        <div class="pc-badge">AI-powered documents</div>
+        <div class="pc-name">ProposalAI</div>
+        <p class="pc-tagline">Describe your project. Get a professional proposal, contract or invoice in under 60 seconds. In any language.</p>
+        <ul class="pc-features">
+          <li>AI writes complete proposals in your industry's language</li>
+          <li>Proposals, contracts, invoices, quotes, scope of work</li>
+          <li>40+ languages supported</li>
+          <li>E-signature built in — no DocuSign needed</li>
+          <li>Stripe payment links in invoices</li>
+          <li>Custom branding on all documents</li>
+          <li>Template library for common project types</li>
+        </ul>
+        <div class="pc-footer">
+          <div class="pc-price">$19<span>/month</span></div>
+          <a href="https://buy.stripe.com/6oUcN78bj6VDfUp10egjC00" class="pc-btn">Start free trial →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUNDLE -->
+  <div class="bundle-section">
+    <div class="bundle-card reveal">
+      <div class="bundle-text">
+        <h3>Get both. Save 33%.</h3>
+        <p>The complete stack for freelancers. Generate proposals with AI, then manage the whole project in your ClientFlow portal. Less switching, more doing.</p>
+      </div>
+      <div class="bundle-pricing">
+        <div class="bundle-was">$48/month separately</div>
+        <div class="bundle-price">$32</div>
+        <div class="bundle-period">per month, everything included</div>
+        <a href="https://buy.stripe.com/4gMfZj0IRfs923z7oCgjC02" class="bundle-btn">Get the bundle →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="section-label">The workflow</div>
+    <h2 class="section-title reveal">Land client. Do work.<br>Get paid. Repeat.</h2>
+    <p class="section-sub reveal">Our two tools cover the entire freelance workflow from first proposal to final payment.</p>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-connector">→</div>
+        <h3>Describe the project</h3>
+        <p>Tell ProposalAI what you're building in plain language. Takes 30 seconds.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <div class="step-connector">→</div>
+        <h3>AI writes the proposal</h3>
+        <p>A professional, industry-specific proposal is ready in under 60 seconds.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <div class="step-connector">→</div>
+        <h3>Client approves in portal</h3>
+        <p>ClientFlow gives them a clean portal to review work, request changes, and sign.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <h3>Invoice & get paid</h3>
+        <p>Send an invoice from ProposalAI with a Stripe payment link. Done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GO TO MARKET -->
+<section class="gtm-section" id="launch">
+  <div class="section-label">Launch strategy</div>
+  <h2 class="section-title reveal">How we reach<br>40,000 customers.</h2>
+  <p class="section-sub reveal">A focused, channel-by-channel strategy to grow from 0 to 50,000 kr/mo in monthly recurring revenue.</p>
+  <div class="gtm-grid">
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">🚀</div>
+      <h3>Product Hunt launch</h3>
+      <p>Launch both products on Product Hunt on the same day. Aim for top 5 Product of the Day. Gets you 500–2,000 signups in 24 hours at zero cost.</p>
+      <div class="gtm-tag">Week 1 · Free</div>
+    </div>
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">💬</div>
+      <h3>Reddit & communities</h3>
+      <p>Post genuinely helpful content in r/freelance, r/webdev, r/entrepreneur, Indie Hackers. Share the story — not just the product.</p>
+      <div class="gtm-tag">Week 1–4 · Free</div>
+    </div>
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">🎬</div>
+      <h3>TikTok / Reels content</h3>
+      <p>"I built a tool that writes proposals in 60 seconds" — this format performs extremely well. 1 viral video can bring 10,000+ signups.</p>
+      <div class="gtm-tag">Ongoing · Free</div>
+    </div>
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">📧</div>
+      <h3>Cold outreach</h3>
+      <p>Target freelancer newsletters, Facebook groups, and LinkedIn communities. Offer free lifetime deals to early adopters for testimonials.</p>
+      <div class="gtm-tag">Month 1–2 · Low cost</div>
+    </div>
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">🤝</div>
+      <h3>Affiliate program</h3>
+      <p>30% commission for referring customers. Freelancers who use the tool share it with other freelancers. Viral growth loop.</p>
+      <div class="gtm-tag">Month 2+ · Self-funded</div>
+    </div>
+    <div class="gtm-card reveal">
+      <div class="gtm-icon">🔍</div>
+      <h3>SEO content</h3>
+      <p>Long-form articles: "How to write a freelance proposal", "Best client portal tools 2026". Ranks fast, brings consistent free traffic.</p>
+      <div class="gtm-tag">Month 1+ · Free</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+  <div class="timeline-inner">
+    <div class="timeline-header reveal">
+      <h2>Road to 50,000 kr/month</h2>
+      <p>A realistic, month-by-month plan to passive income.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-time"><strong>Week 1–2</strong>Now</div>
+        <div class="tl-content">
+          <h4>Launch prep</h4>
+          <p>Deploy both apps on helgason.io via GitHub. Set up Stripe, custom domain, email (hello@helgason.io). Submit to Product Hunt queue.</p>
+          <div class="tl-tags"><span class="tl-tag active">In progress</span><span class="tl-tag">GitHub</span><span class="tl-tag">Stripe</span></div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time"><strong>Week 3–4</strong>May</div>
+        <div class="tl-content">
+          <h4>Public launch</h4>
+          <p>Product Hunt launch day. Post on Reddit, Indie Hackers, LinkedIn. Target 50 free signups, 5 paying customers.</p>
+          <div class="tl-tags"><span class="tl-tag">Product Hunt</span><span class="tl-tag">Reddit</span><span class="tl-tag">Goal: 5 customers</span></div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time"><strong>Month 2</strong>June</div>
+        <div class="tl-content">
+          <h4>Content + outreach</h4>
+          <p>TikTok/Reels content. SEO articles live. Cold outreach to freelancer communities. Launch affiliate program. Target 30 paying customers = ~10,000 kr/mo.</p>
+          <div class="tl-tags"><span class="tl-tag">Goal: 30 customers</span><span class="tl-tag">~10,000 kr/mo</span></div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time"><strong>Month 3–4</strong>Jul–Aug</div>
+        <div class="tl-content">
+          <h4>Scale & iterate</h4>
+          <p>Double down on what works. Add features based on user feedback. First partnerships with freelancer newsletters. Target 80–100 customers = ~25,000 kr/mo.</p>
+          <div class="tl-tags"><span class="tl-tag">Goal: 100 customers</span><span class="tl-tag">~25,000 kr/mo</span></div>
+        </div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-time"><strong>Month 6</strong>Nov</div>
+        <div class="tl-content">
+          <h4>Passive income milestone</h4>
+          <p>150–200 customers across both products + bundle. SEO traffic compounding. Affiliate program generating signups. Target: 50,000 kr/mo fully passive.</p>
+          <div class="tl-tags"><span class="tl-tag">Goal: 200 customers</span><span class="tl-tag active">50,000 kr/mo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Start building<br>your <em>stack</em> today.</h2>
+  <p>Both products are live. Both have free trials. Pick one, try it, and see what it's like to have more professional clients — and more time.</p>
+  <div class="cta-btns">
+    <a href="https://buy.stripe.com/fZu3cxcrz4Nv8rX10egjC01" class="btn-dark">◉ Try ClientFlow free →</a>
+    <a href="https://buy.stripe.com/6oUcN78bj6VDfUp10egjC00" class="btn-dark" style="background:var(--a2)">✦ Try ProposalAI free →</a>
+    <a href="#products" class="btn-light">See bundle deal</a>
+  </div>
+  <p style="margin-top:2rem;font-size:.8rem;color:var(--muted)">No credit card · Cancel anytime · 14-day free trial</p>
+</section>
+
+<footer>
+  <div class="footer-logo">helgason<span>.io</span></div>
+  <ul>
+    <li><a href="https://buy.stripe.com/fZu3cxcrz4Nv8rX10egjC01">ClientFlow</a></li>
+    <li><a href="https://buy.stripe.com/6oUcN78bj6VDfUp10egjC00">ProposalAI</a></li>
+    <li><a href="https://buy.stripe.com/4gMfZj0IRfs923z7oCgjC02">Privacy</a></li>
+    <li><a href="https://buy.stripe.com/4gMfZj0IRfs923z7oCgjC02">Terms</a></li>
+    <li><a href="mailto:hello@helgason.io">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Helgason.io</div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*70);obs.unobserve(e.target)}
+  });
+},{threshold:.07});
+reveals.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
